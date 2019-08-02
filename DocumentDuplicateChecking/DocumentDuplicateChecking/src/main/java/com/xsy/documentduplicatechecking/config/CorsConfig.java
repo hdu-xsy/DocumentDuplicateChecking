@@ -1,0 +1,24 @@
+package com.xsy.documentduplicatechecking.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+/**
+ * 跨域请求
+ *
+ * @author xushiyue
+ * @date 2019年8月2日15:57:14
+ */
+@Configuration
+public class CorsConfig extends WebMvcConfigurerAdapter {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/*")
+                .allowedOrigins("http://localhost")
+                .allowedMethods("GET", "POST", "DELETE")
+                .allowCredentials(true)
+                .maxAge(3600);
+    }
+}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <!-- 引入样式 -->
+        <link href="https://cdn.bootcss.com/element-ui/2.11.1/theme-chalk/index.css" rel="stylesheet">
+        <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+        <!--适用于主要访问来自中国大陆地区用户的业务场景-->
+        <script type="text/javascript" charset="utf-8" src="//g.alicdn.com/sd/ncpc/nc.js?t=2015052012"></script>
+    </head>
+    <body>
+        <!--No-Captcha渲染的位置，其中 class 中必须包含 nc-container-->
+        <dev id="app" name="app">
+            <el-form id="login" name="login">
+                <el-form-item label="yonghuming">
+                    <el-input v-model="username" id="username" name="username"/> 
+                </el-form-item>
+                <el-form-item label="mima">
+                    <el-input v-model="password" id="password" name="password"show-password/> 
+                </el-form-item>
+                <el-button id="next" name="next" @click="next">next</el-button>
+            </el-form>
+        </dev>
+        <br/><br/>
+        <div id="your-dom-id" class="nc-container"></div>
+        <script type="text/javascript">
+        var nc_token = ["CF_APP_1", (new Date()).getTime(), Math.random()].join(':');
+        var NC_Opt = 
+        {
+            renderTo: "#your-dom-id",
+            appkey: "FFFF0N0000000000811A",
+            scene: "nc_register",
+            token: nc_token,
+            customWidth: 300,
+            trans:{"key1":"code0"},
+            elementID: ["usernameID"],
+            is_Opt: 0,
+            language: "cn",
+            isEnabled: true,
+            timeout: 3000,
+            times:5,
+            apimap: {},
+            //前端滑动验证通过时会触发该回调参数。您可以在该回调参数中将请求标识（token）、会话ID（sessionid）、签名串（sig）字段记录下来，随业务请求一同发送至您的服务端调用验签。
+            callback: function (data) {
+                mobile_no = $("#mobile_no").val()
+                $.ajax({
+                    type:'GET',
+                    contentType : 'application/json',
+	                dataType : 'jsonp',
+                    jsonpCallback:"callback",
+                    timeout: 10000, // 超时时间 10 秒
+                    url: "http://127.0.0.1:8080/sendRegMsg",
+                    data: {
+                        "mobileNo":mobile_no,
+                        "token":nc_token,
+                        "scene":"nc_register",
+                        "sessionId":data.csessionid,
+                        "sig":data.sig
+                    },
+                    success: function(data) {
+                        console.log(data)
+                        if(data.data == '手机号格式错误') {
+                            alert(data.data)
+                        }
+                        if(data.data == 'pass') {
+                            console.log("pass")
+                            $("#mydev").hide()
+                            $("#your-dom-id").hide()
+                            $("#aaaa").show()
+                        }
+                    },
+                    error: function(err) {
+                        console.log("error" + err)
+                    },
+                    complete: function(XMLHttpRequest, status) { //请求完成后最终执行参数　
+                    }
+                })
+                window.console && console.log(nc_token)
+                window.console && console.log(data.csessionid)
+                window.console && console.log(data.sig)
+            }
+        }
+        var nc = new noCaptcha(NC_Opt)
+        //用于自定义文案。详细配置方法请参见自定义文案与多语言文档。
+        nc.upLang('cn', {
+            _startTEXT: "请按住滑块，拖动到最右边",
+            _yesTEXT: "验证通过",
+            _error300: "哎呀，出错了，点击<a href=\"javascript:__nc.reset()\">刷新</a>再来一次",
+            _errorNetwork: "网络不给力，请<a href=\"javascript:__nc.reset()\">点击刷新</a>"
+        })
+
+        $("#login").click(function() {
+            $.ajax({
+                    type:'GET',
+                    contentType : 'application/json',
+	                dataType : 'jsonp',
+                    jsonpCallback:"callback",
+                    timeout: 10000, // 超时时间 10 秒
+                    url: "http://127.0.0.1:8080/login",
+                    data: {
+                        "password":$("#password").val(),
+                        "username":$("#username").val(),
+                    },
+                    success: function(data) {
+                        console.log(data)
+                    },
+                    error: function(err) {
+                        console.log("error" + err)
+                    },
+                    complete: function(XMLHttpRequest, status) { //请求完成后最终执行参数　
+                    }
+                })
+        })
+        </script>
+    </body>
+
+    <!-- import Vue before Element -->
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="https://cdn.bootcss.com/element-ui/2.11.1/index.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.0/axios.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: function() {
+                return { 
+                    username:'',
+                    password:''
+                }
+            },
+            methods: {
+            }
+        })
+        function params() {
+            var params = new URLSearchParams();
+            for (var i=0; i< arguments.length; i=i+2) {
+                params.append(arguments[i],arguments[i+1])
+            }
+            return params
+        }
+    </script>
+</html>
