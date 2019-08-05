@@ -10,7 +10,7 @@
     </head>
     <body>
         <!--No-Captcha渲染的位置，其中 class 中必须包含 nc-container-->
-        <dev id="app" name="app">
+        <div id="app" name="app">
             <el-form id="login" name="login">
                 <el-form-item label="yonghuming">
                     <el-input v-model="username" id="username" name="username"/> 
@@ -20,7 +20,7 @@
                 </el-form-item>
                 <el-button id="next" name="next" @click="next">next</el-button>
             </el-form>
-        </dev>
+        </div>
         <br/><br/>
         <div id="your-dom-id" class="nc-container"></div>
         <script type="text/javascript">
@@ -64,7 +64,7 @@
                         }
                         if(data.data == 'pass') {
                             console.log("pass")
-                            $("#mydev").hide()
+                            $("#mydiv").hide()
                             $("#your-dom-id").hide()
                             $("#aaaa").show()
                         }
@@ -88,29 +88,6 @@
             _error300: "哎呀，出错了，点击<a href=\"javascript:__nc.reset()\">刷新</a>再来一次",
             _errorNetwork: "网络不给力，请<a href=\"javascript:__nc.reset()\">点击刷新</a>"
         })
-
-        $("#login").click(function() {
-            $.ajax({
-                    type:'GET',
-                    contentType : 'application/json',
-	                dataType : 'jsonp',
-                    jsonpCallback:"callback",
-                    timeout: 10000, // 超时时间 10 秒
-                    url: "http://127.0.0.1:8080/login",
-                    data: {
-                        "password":$("#password").val(),
-                        "username":$("#username").val(),
-                    },
-                    success: function(data) {
-                        console.log(data)
-                    },
-                    error: function(err) {
-                        console.log("error" + err)
-                    },
-                    complete: function(XMLHttpRequest, status) { //请求完成后最终执行参数　
-                    }
-                })
-        })
         </script>
     </body>
 
@@ -129,6 +106,29 @@
                 }
             },
             methods: {
+                next() {
+                    $.ajax({
+                        type:'GET',
+                        contentType : 'application/json',
+                        dataType : 'jsonp',
+                        jsonpCallback:"callback",
+                        timeout: 10000, // 超时时间 10 秒
+                        url: "http://127.0.0.1/user/login",
+                        data: {
+                            "password":$("#password").val(),
+                            "username":$("#username").val(),
+                        },
+                        success: function(data) {
+                            localStorage.setItem("token",data)
+                            console.log(data)
+                        },
+                        error: function(err) {
+                            console.log("error" + err)
+                        },
+                        complete: function(XMLHttpRequest, status) { //请求完成后最终执行参数　
+                        }
+                    })
+                }
             }
         })
         function params() {

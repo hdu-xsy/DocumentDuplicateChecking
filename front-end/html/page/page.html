@@ -1,1 +1,51 @@
-You have login
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <!-- 引入样式 -->
+        <link href="https://cdn.bootcss.com/element-ui/2.11.1/theme-chalk/index.css" rel="stylesheet">
+        <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    </head>
+    <body>
+        <div id="app" name="app">
+            <p>aaaaa</p>
+            <el-input v-model="login" id="login" name="login"/> 
+        </div>
+    </body>
+    <!-- import Vue before Element -->
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="https://cdn.bootcss.com/element-ui/2.11.1/index.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.0/axios.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: function() {
+                return { 
+                    login:localStorage.getItem("key")
+                }
+            },
+            methods: {
+               
+            },
+            mounted() {
+                axios.post('http://localhost/user/checkLogin', params("token",localStorage.getItem("token")))
+                    .then(function (response) {
+                        if(response.data.msg == "error") {
+                            $(location).attr('href', '../error/403.html');
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        })
+        function params() {
+            var params = new URLSearchParams();
+            for (var i=0; i< arguments.length; i=i+2) {
+                params.append(arguments[i],arguments[i+1])
+            }
+            return params
+        }
+    </script>
+</html>

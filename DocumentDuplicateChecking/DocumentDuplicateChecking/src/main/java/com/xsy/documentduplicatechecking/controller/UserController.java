@@ -9,18 +9,17 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.xsy.documentduplicatechecking.dto.Response;
+import com.xsy.documentduplicatechecking.entity.SysUser;
 import com.xsy.documentduplicatechecking.exception.NotValidException;
 import com.xsy.documentduplicatechecking.helper.SysUserHelper;
 import com.xsy.documentduplicatechecking.request.RegRequest;
 import com.xsy.documentduplicatechecking.request.RegSendMsgRequest;
 import com.xsy.documentduplicatechecking.serivce.SysUserService;
+import com.xsy.documentduplicatechecking.utils.RedisUtil;
 import com.xsy.documentduplicatechecking.utils.ValidateUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.security.auth.login.LoginException;
@@ -31,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
  * @date 2019年7月31日11:04:30
  */
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     @Value("${accessKeyId}")
@@ -118,13 +118,23 @@ public class UserController {
 
     @GetMapping("/login")
     public JSONPObject login(HttpServletRequest httpServletRequest, @RequestParam("username") String username, @RequestParam("password") String password) {
-        System.out.println(username + password);
+        String token = "";
         try {
-            sysUserService.loginUser(username, password);
+            token = sysUserService.loginUser(username, password);
         } catch (LoginException e) {
             e.printStackTrace();
         }
         String jsonpCallback = httpServletRequest.getParameter("callback");
-        return new JSONPObject(jsonpCallback, "ok");
+        return new JSONPObject(jsonpCallback, token);
+    }
+
+    @PostMapping("/checkLogin")
+    public Response checkLogin(@RequestParam("token") String token) {
+        String userId = sysUserService.findByToken(token);
+        if(userId == null) {
+            return Response.error("error");
+        } else {
+            return Response.ok(userId);
+        }
     }
 }

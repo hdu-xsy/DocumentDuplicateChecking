@@ -21,7 +21,7 @@ public class LoginInterceptorConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor).excludePathPatterns("/error", "/login", "/reg", "/test", "/sendRegMsg");
+        registry.addInterceptor(loginInterceptor).excludePathPatterns("/error", "/login", "/reg", "/test", "/sendRegMsg","/user/*");
         super.addInterceptors(registry);
     }
 }
